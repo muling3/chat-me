@@ -3,11 +3,16 @@ import NotFound from "./screens/404"
 import Chat from "./screens/Chat"
 import Login from "./screens/Login"
 import UsersList from "./screens/UsersList"
+import Header from "./components/Header";
+
+//css
+import "./main.css";
 
 const App = () => {
 
   return (
     <BrowserRouter>
+    <Header />
     <Routes>
       <Route path="/" element={<Login />}/>
       <Route path="/users" element={<UsersList />}/>
