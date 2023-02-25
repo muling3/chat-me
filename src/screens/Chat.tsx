@@ -1,9 +1,14 @@
-import React, { MouseEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { MouseEvent, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Chat = () => {
+  const { state } = useLocation();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log(state);
+  }, []);
+  
   const handleSendMessage = () => {
 
   }
