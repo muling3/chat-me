@@ -1,35 +1,37 @@
-import React, { FormEvent, ChangeEvent, useState } from "react";
-import {useNavigate } from "react-router-dom";
-
-//socket io client
-import { io } from "socket.io-client";
+import axios from "axios";
+import React, { FormEvent, ChangeEvent, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [loginDetails, setLoginDetails] = useState<{username: string, password: string}>({
+  const [errr, setErrr] = useState(false);
+
+  const [loginDetails, setLoginDetails] = useState<{
+    username: string;
+    password: string;
+  }>({
     username: "",
-    password: ""
-  })
+    password: "",
+  });
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setLoginDetails(prev => ({...prev, [e.target.name]: e.target.value}));
-  }
+    setLoginDetails((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
-  const formSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
+  const formSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     //ensure user has filled
-    if(!loginDetails.username || !loginDetails.password){
-      console.log("Fill in the form")
+    if (!loginDetails.username || !loginDetails.password) {
+      console.log("Fill in the form");
       return;
     }
 
-    // TODO: Save the user in db if he doesnt exist
-
-    //store the user login details in local storage
-    // localStorage.setItem("user", JSON.stringify(loginDetails))
-
-    navigate("/users");
+    //store the user login details in local storage after successful login
+    const { data } = await axios.post("http://localhost:4000/auth/login", {...loginDetails})
+    localStorage.setItem("user", JSON.stringify(loginDetails))
+    console.log(data)
+    navigate("/users")
   };
 
   return (

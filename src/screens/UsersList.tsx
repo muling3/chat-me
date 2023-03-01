@@ -1,42 +1,34 @@
-import React, { MouseEvent, useEffect } from "react";
-import { useLocation, useNavigate, NavigateOptions } from "react-router-dom";
+import axios, { AxiosResponse } from "axios";
+import { MouseEvent, useEffect, useState } from "react";
+import { useNavigate, NavigateOptions } from "react-router-dom";
 import { User } from "../helpers/User.interface";
 
-//scoket io client
-import { io } from "socket.io-client";
-
+let userInfo: User;
 const UsersList = () => {
-  const { state } = useLocation();
   const navigate = useNavigate();
 
-  //define global socket io client
-  let client;
+  const [usersList, setUsers] = useState<User[]>([]);
 
-  // chat mate
-  let receiver_name: String = "";
-
-  const usersList: User[] = [
-    { username: "alexam", password: "1234", id: 1, status: "Offline" },
-    { username: "johnte", password: "1234", id: 2, status: "Online" },
-    { username: "chris", password: "1234", id: 3, status: "Online" },
-    { username: "jackson", password: "1234", id: 4, status: "Offline" },
-  ];
+  // fetching user from local storage
 
   useEffect(() => {
-    console.log(state);
-  }, [state]);
-
-  useEffect(() => {
-    client = io("http://localhost:4000")
-    console.log(client)
+    userInfo = JSON.parse(localStorage.getItem("user") as string);
+    console.log("userinfo", userInfo);
   }, []);
 
-  const handleChatOnClick = (name: String) => {
-    receiver_name = name;
+  useEffect(() => {
+    axios
+      .get("http://localhost:4000/users")
+      .then((d: AxiosResponse<{ users: User[]; error: String }>) =>
+        setUsers(d.data.users)
+      )
+      .catch((err) => console.log(err));
+  }, []);
 
+  const handleChatOnClick = (name: String, status: String) => {
     //update navigation options
     const options: NavigateOptions = {
-      state: { user: state.username, receiver_name },
+      state: { from: userInfo.username, to: name, stat: status },
     };
 
     navigate("/chat", options);
@@ -62,28 +54,29 @@ const UsersList = () => {
           </div>
         </div>
         <div className="users-list">
-          {usersList.map((u) => (
-            <div className="user-card">
-              <div className="user-info">
-                <div className="profile-pic">
-                  {u.username.substring(0, 1).toUpperCase()}
-                  {/* <img src="" alt="" /> */}
+          {usersList !== null &&
+            usersList.map((u) => (
+              <div className="user-card" key={u.id}>
+                <div className="user-info">
+                  <div className="profile-pic">
+                    {u.username.substring(0, 1).toUpperCase()}
+                    {/* <img src="" alt="" /> */}
+                  </div>
+                  <div className="about">
+                    <p className="name">{u.username}</p>
+                    <p className="status">{u.status}</p>
+                  </div>
                 </div>
-                <div className="about">
-                  <p className="name">{u.username}</p>
-                  <p className="status">{u.status}</p>
+                <div>
+                  <div
+                    className="chat-button"
+                    onClick={() => handleChatOnClick(u.username, u.status)}
+                  >
+                    Chat
+                  </div>
                 </div>
               </div>
-              <div>
-                <div
-                  className="chat-button"
-                  onClick={() => handleChatOnClick(u.username)}
-                >
-                  Chat
-                </div>
-              </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </>

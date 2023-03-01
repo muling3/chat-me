@@ -1,17 +1,43 @@
-import React, { MouseEvent, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, {
+  ChangeEvent,
+  MouseEvent,
+  useEffect,
+  useState,
+} from "react";
+import { Location, useLocation, useNavigate } from "react-router-dom";
+import { io, Socket } from "socket.io-client";
+import { Message } from "../helpers/message.interface";
 
+//scroll to bottom
+import ScrollToBottom from "react-scroll-to-bottom";
+
+let client: Socket;
 const Chat = () => {
-  const { state } = useLocation();
+  const { state }: Location = useLocation();
+  const { from, to, stat } = state;
+
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log(state);
-  }, []);
-  
-  const handleSendMessage = () => {
+  const [messagesList, setMessages] = useState<Message[]>([]);
 
-  }
+  useEffect(() => {
+    client = io("http://localhost:4000");
+    client.emit("user-messages");
+
+    client.on("messages", (arg: { messages: Message[] }) => {
+      setMessages(arg.messages);
+    });
+  }, []);
+
+  const handleSendMessage = () => {
+    let userInput: HTMLInputElement = document.getElementById(
+      "message"
+    ) as HTMLInputElement;
+    client.emit("message", { from, to, message: userInput.value });
+
+    // clearing the message input
+    userInput.value = "";
+  };
 
   const handleCloseOnClick = (e: MouseEvent<HTMLButtonElement>) => {
     navigate("/users");
@@ -22,12 +48,12 @@ const Chat = () => {
       <div className="chat-header">
         <div className="user-info">
           <div className="profile-pic">
-            CZ
+            {to.substring(0, 1).toUpperCase()}
             {/* <img src="" alt="" /> */}
           </div>
           <div className="about">
-            <p className="name">Chris Zimenyanya</p>
-            <p className="status">Online</p>
+            <p className="name">{to}</p>
+            <p className="status">{stat}</p>
           </div>
         </div>
         <div>
@@ -36,27 +62,34 @@ const Chat = () => {
           </button>
         </div>
       </div>
-      <div className="chat-area">
-        {/* <div className="received-message message">
-          Hi, iits a from message
-        </div> */}
+      <div className="chat-area" id="chat-area">
+        {messagesList &&
+          messagesList.map((m) => (
+            <>
+              {m.send_to == from && (
+                <div className="received-message message">{m.message}</div>
+              )}
 
-        <div className="send-message message">
-          Hi its a to message
-        </div>
-        {/*<div className="received-message message">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit hic enim quibusdam? Neque temporibus, assumenda vero quisquam molestias suscipit officiis?
-        </div>
-        <div className="received-message message">
-          Hi, iits a from message
-        </div>
-        <div className="send-message message">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam molestiae beatae officiis eum ullam impedit. Quidem consequatur explicabo sapiente at esse fugiat iste corporis eum nulla odio, fuga officia praesentium soluta officiis, suscipit ut quos natus velit incidunt. Natus nulla placeat nesciunt, quae modi delectus quas temporibus qui laborum itaque deserunt iure veritatis sed cum dolorum inventore illum suscipit dolorem ducimus quo voluptates. Aperiam dolorum placeat perspiciatis ipsam? Unde facere, beatae culpa harum nihil delectus similique natus nam asperiores, quis, id dolorem quam quibusdam dolores enim autem. Dolore accusamus id rerum eos voluptate, est sapiente ducimus, iure facilis voluptatem suscipit!
-        </div> */}
+              {m.send_from == from && (
+                <div className="send-message message">{m.message}</div>
+              )}
+            </>
+          ))}
       </div>
+      <script>
+        let chatArea = document.getElementById("chat-area");
+        chatArea.scrollTo(0, chatArea.scrollHeight);
+      </script>
       <div className="send">
-        <input type="text" placeholder="Type your message here..." />
-        <button className="send-btn" onClick={handleSendMessage}>Send</button>
+        <input
+          type="text"
+          name="message"
+          id="message"
+          placeholder="Type your message here..."
+        />
+        <button className="send-btn" onClick={handleSendMessage}>
+          Send
+        </button>
       </div>
     </div>
   );
