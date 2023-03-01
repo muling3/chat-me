@@ -8,7 +8,8 @@ CREATE TABLE "users" (
 
 CREATE TABLE "messages" (
   "id" bigserial PRIMARY KEY,
-  "from" varchar NOT NULL,
-  "to" varchar NOT NULL,
+  "send_from" varchar NOT NULL,
+  "send_to" varchar NOT NULL,
+  "message" varchar NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );

@@ -1,62 +1,62 @@
-const InsertUser = (client, query, values) => {
-  let user;
-
-  client.query(query, values, (err, res) => {
-    if (err) {
-      console.log(err.stack);
-    } else {
-      user = res.rows[0];
-    }
-  });
-
-  return user;
+const InsertUser = async (client, queryString, values) => {
+  try {
+    const res = await client.query(queryString, values);
+    return { user: res.rows[0] };
+  } catch (error) {
+    return { error };
+  }
 };
 
-const FetchUser = (client, query, values) => {
-  let user;
-  client.query(query, values, (err, res) => {
-    if (err) {
-      console.log(err.stack);
-    } else {
-      user = res.rows[0];
-    }
-  });
-  return user;
+const FetchUser = async (client, queryString, values) => {
+  try {
+    const res = await client.query(queryString, values);
+    return { user: res.rows[0] };
+  } catch (error) {
+    return { error };
+  }
 };
 
-const GetAllUsers = (client, query, values) => {
-  let users = [];
-  client.query(query, values, (err, res) => {
-    if (err) {
-      console.log(err.stack);
-    } else {
-      users = res.rows;
-    }
-  });
-  return users;
+const FetchUserByUsername = async (client, queryString, values) => {
+  try {
+    const res = await client.query(queryString, values);
+    return { user: res.rows[0] };
+  } catch (error) {
+    return { error };
+  }
 };
 
-const CreateMessage = (client, query, values) => {
-  client.query(query, values, (err, res) => {
-    if (err) {
-      console.log(err.stack);
-    } else {
-    console.log(res.rows[0]);
-    }
-  });
+const GetAllUsers = async (client, queryString) => {
+  try {
+    const res = await client.query(queryString);
+    return { users: res.rows };
+  } catch (error) {
+    return { error };
+  }
 };
 
-const GetAllMessages = (client, query, values) => {
-  let messages = [];
-  client.query(query, values, (err, res) => {
-    if (err) {
-      console.log(err.stack);
-    } else {
-      messages = res.rows;
-    }
-  });
-  
-  return messages;
+const CreateMessage = async (client, queryString, values) => {
+  try {
+    const result = await client.query(queryString, values);
+    return { msg: result.rows[0] };
+  } catch (error) {
+    return { error };
+  }
 };
 
-module.exports = { InsertUser, FetchUser, GetAllUsers, GetAllMessages, CreateMessage}
+const GetAllMessages = async (client, queryString, values) => {
+  try {
+    const res = await client.query(queryString, values);
+    return { messages: res.rows };
+  } catch (error) {
+    return { error };
+  }
+};
+
+module.exports = {
+  InsertUser,
+  FetchUser,
+  FetchUserByUsername,
+  GetAllUsers,
+  GetAllMessages,
+  CreateMessage,
+};
