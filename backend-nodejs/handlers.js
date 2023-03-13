@@ -45,6 +45,7 @@ const LoginUser = async (req, res) => {
     username,
     password,
   ]);
+
   if (!user) {
     res.json({ error: "Bad Credentials" }).status(401);
     return;

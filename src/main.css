@@ -221,6 +221,15 @@ body{
     width: 100px;
 }
 
+.scroll-area{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
 .chat-area{
     height: 100%;
     width: 100%;
@@ -274,4 +283,9 @@ body{
     outline: none;
     border: 0;
     border-radius: 8px;
+    cursor: pointer;
+}
+.send-btn:hover{
+    background-color: var(--send-message-bg);
+    color: white;
 }

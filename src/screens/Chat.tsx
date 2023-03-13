@@ -1,9 +1,4 @@
-import React, {
-  ChangeEvent,
-  MouseEvent,
-  useEffect,
-  useState,
-} from "react";
+import React, { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 import { Location, useLocation, useNavigate } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
 import { Message } from "../helpers/message.interface";
@@ -22,9 +17,14 @@ const Chat = () => {
 
   useEffect(() => {
     client = io("http://localhost:4000");
-    client.emit("user-messages");
+    client.emit("user-messages", { from, to });
 
     client.on("messages", (arg: { messages: Message[] }) => {
+      // sorting the messages by id so that they can be logged as they were sent
+      arg.messages.sort(function (a, b) {
+        return a.id - b.id;
+      });
+
       setMessages(arg.messages);
     });
   }, []);
@@ -62,24 +62,24 @@ const Chat = () => {
           </button>
         </div>
       </div>
-      <div className="chat-area" id="chat-area">
+      <ScrollToBottom className="scroll-area" scrollViewClassName="chat-area">
         {messagesList &&
           messagesList.map((m) => (
             <>
               {m.send_to == from && (
-                <div className="received-message message">{m.message}</div>
+                <div className="received-message message" key={m.id}>
+                  {m.message}
+                </div>
               )}
 
               {m.send_from == from && (
-                <div className="send-message message">{m.message}</div>
+                <div className="send-message message" key={m.id}>
+                  {m.message}
+                </div>
               )}
             </>
           ))}
-      </div>
-      <script>
-        let chatArea = document.getElementById("chat-area");
-        chatArea.scrollTo(0, chatArea.scrollHeight);
-      </script>
+      </ScrollToBottom>
       <div className="send">
         <input
           type="text"
