@@ -48,6 +48,7 @@ body{
     border: 1px solid var(--grey);
     border-radius: 20px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     
@@ -76,6 +77,17 @@ body{
     background-color: var(--grey-fade);
     border-radius: 10px;
     box-shadow: inset 4px 4px 4px 0 rgba(0, 0, 0, 0.25), inset -4px -4px 4px 0 rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+}
+.login-container .footer{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.footer span{
+    text-decoration: underline;
+    color: var(--header-span-color);
+    margin-left: 4px;
     cursor: pointer;
 }
 

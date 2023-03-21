@@ -1,12 +1,13 @@
 import axios from "axios";
-import React, { FormEvent, ChangeEvent, useState, useEffect } from "react";
+import { FormEvent, ChangeEvent, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
   const [errr, setErrr] = useState(false);
+  const [btnText, setBtnText] = useState("LOGIN");
 
-  const [loginDetails, setLoginDetails] = useState<{
+  const [userDetails, setUserDetails] = useState<{
     username: string;
     password: string;
   }>({
@@ -15,29 +16,48 @@ const Login = () => {
   });
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setLoginDetails((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setUserDetails((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const formSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     //ensure user has filled
-    if (!loginDetails.username || !loginDetails.password) {
+    if (!userDetails.username || !userDetails.password) {
       console.log("Fill in the form");
       return;
     }
 
-    //store the user login details in local storage after successful login
-    const { data } = await axios.post("http://localhost:4000/auth/login", {
-      ...loginDetails,
-    });
+    //check on the value of btnText
+    if (btnText === "LOGIN") {
+      const { data } = await axios.post("http://localhost:4000/auth/login", {
+        ...userDetails,
+      });
+      
+      console.log(data)
+    }
+
+    if (btnText === "REGISTER") {
+      const { data } = await axios.post("http://localhost:4000/auth/register", {
+        ...userDetails,
+      });
+
+      console.log(data)
+    }
+
+    // update status: Online or Offline
     const res = await axios.post("http://localhost:4000/users/status", {
-      username: loginDetails.username,
+      username: userDetails.username,
       status: "Online",
     });
 
-    localStorage.setItem("user", JSON.stringify(loginDetails));
+    //store the user login details in local storage after successful login
+    localStorage.setItem("user", JSON.stringify(userDetails));
     navigate("/users");
+  };
+
+  const handleLoginRegisterLink = () => {
+    btnText === "LOGIN" ? setBtnText("REGISTER") : setBtnText("LOGIN");
   };
 
   return (
@@ -47,7 +67,7 @@ const Login = () => {
           <input
             type="text"
             name="username"
-            value={loginDetails.username}
+            value={userDetails.username}
             id="username"
             placeholder="Enter your username"
             onChange={handleInputChange}
@@ -55,13 +75,23 @@ const Login = () => {
           <input
             type="password"
             name="password"
-            value={loginDetails.password}
+            value={userDetails.password}
             id="password"
             placeholder="Enter your password"
             onChange={handleInputChange}
           />
-          <input type="submit" value="LOGIN" />
+          <input type="submit" value={btnText} />
         </form>
+        <div className="footer">
+          {btnText === "LOGIN" ? (
+            <p>Don't have an account?</p>
+          ) : (
+            <p>Already have an account?</p>
+          )}
+          <span onClick={handleLoginRegisterLink}>
+            {btnText === "LOGIN" ? "Register" : "Login"}
+          </span>
+        </div>
       </div>
     </>
   );

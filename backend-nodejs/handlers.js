@@ -17,7 +17,7 @@ const {
 
 const AddUser = async (req, res) => {
   const { username, password } = req.body;
-
+  
   //check whether username already exists in db
   const result1 = await FetchUserByUsername(client, FIND_USERNAME, [username]);
   if (result1.user != undefined) {
