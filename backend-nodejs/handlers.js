@@ -1,11 +1,18 @@
 const client = require("./db/dbConfig");
-const { FetchUser, InsertUser, FetchUserByUsername, GetAllUsers } = require("./db/helpers");
+const {
+  FetchUser,
+  InsertUser,
+  FetchUserByUsername,
+  GetAllUsers,
+  UpdateUserStatus,
+} = require("./db/helpers");
 
 const {
   FETCH_SINGLE_USER,
   FETCH_USERS,
   FIND_USERNAME,
   INSERT_USER,
+  UPDATE_STATUS,
 } = require("./db/queries/queries");
 
 const AddUser = async (req, res) => {
@@ -26,7 +33,7 @@ const AddUser = async (req, res) => {
   const { user, error } = await InsertUser(client, INSERT_USER, [
     username,
     password,
-    "Online",
+    "Offline",
   ]);
 
   if (error) {
@@ -71,4 +78,18 @@ const FetchAllUsers = async (req, res) => {
   res.json({ users }).status(200);
 };
 
-module.exports = { AddUser, LoginUser, FetchAllUsers };
+const UpdateStatus = async (req, res) => {
+  const { rows, error } = await UpdateUserStatus(client, UPDATE_STATUS, [
+    req.body.status,
+    req.body.username,
+  ]);
+
+  if (error) {
+    res.json({ error }).status(500);
+    return;
+  }
+
+  res.status(200).json({ rows });
+};
+
+module.exports = { AddUser, LoginUser, FetchAllUsers, UpdateStatus };

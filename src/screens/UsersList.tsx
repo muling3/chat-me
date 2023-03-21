@@ -10,7 +10,6 @@ const UsersList = () => {
   const [usersList, setUsers] = useState<User[]>([]);
 
   // fetching user from local storage
-
   useEffect(() => {
     userInfo = JSON.parse(localStorage.getItem("user") as string);
     console.log("userinfo", userInfo);
@@ -20,7 +19,7 @@ const UsersList = () => {
     axios
       .get("http://localhost:4000/users")
       .then((d: AxiosResponse<{ users: User[]; error: String }>) =>
-        setUsers(d.data.users)
+        setUsers(d.data.users.filter((u) => u.username != userInfo.username))
       )
       .catch((err) => console.log(err));
   }, []);
@@ -36,8 +35,16 @@ const UsersList = () => {
 
   const logoutHandler = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    //update the user status to online
+    axios.post("http://localhost:4000/users/status", {
+      username: userInfo.username,
+      status: "Offline",
+    }).then( (d) => {
+      //remove the user from local storage
+    localStorage.removeItem("user")
 
     navigate("/");
+    }).catch(err => console.log("error logging out", err));
   };
 
   return (

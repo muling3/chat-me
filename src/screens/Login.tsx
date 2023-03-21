@@ -28,10 +28,16 @@ const Login = () => {
     }
 
     //store the user login details in local storage after successful login
-    const { data } = await axios.post("http://localhost:4000/auth/login", {...loginDetails})
-    localStorage.setItem("user", JSON.stringify(loginDetails))
-    console.log(data)
-    navigate("/users")
+    const { data } = await axios.post("http://localhost:4000/auth/login", {
+      ...loginDetails,
+    });
+    const res = await axios.post("http://localhost:4000/users/status", {
+      username: loginDetails.username,
+      status: "Online",
+    });
+
+    localStorage.setItem("user", JSON.stringify(loginDetails));
+    navigate("/users");
   };
 
   return (

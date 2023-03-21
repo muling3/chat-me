@@ -34,6 +34,15 @@ const GetAllUsers = async (client, queryString) => {
   }
 };
 
+const UpdateUserStatus = async (client, queryString, values) => {
+  try {
+    const res = await client.query(queryString, values);
+    return { rows: res.rows[0] };
+  } catch (error) {
+    return { error };
+  }
+};
+
 const CreateMessage = async (client, queryString, values) => {
   try {
     const result = await client.query(queryString, values);
@@ -59,4 +68,5 @@ module.exports = {
   GetAllUsers,
   GetAllMessages,
   CreateMessage,
+  UpdateUserStatus,
 };

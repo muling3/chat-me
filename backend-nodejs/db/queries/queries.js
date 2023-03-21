@@ -8,6 +8,7 @@ const CREATE_MESSAGE =
   "INSERT INTO messages(send_from, send_to, message) VALUES($1, $2, $3) RETURNING *";
 const FETCH_MESSAGES = "SELECT * FROM messages";
 const FETCH_USER_MESSAGES = "SELECT * FROM messages WHERE send_from = $1 and send_to = $2"
+const UPDATE_STATUS = "UPDATE users SET status = $1 WHERE username = $2 RETURNING *";
 
 module.exports = {
   INSERT_USER,
@@ -17,4 +18,5 @@ module.exports = {
   CREATE_MESSAGE,
   FETCH_MESSAGES,
   FETCH_USER_MESSAGES,
+  UPDATE_STATUS,
 };

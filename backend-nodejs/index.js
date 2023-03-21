@@ -7,9 +7,8 @@ const cors = require("cors");
 
 //import db client
 const client = require("./db/dbConfig");
-const { CREATE_MESSAGE, FETCH_MESSAGES,
-  FETCH_USER_MESSAGES, FETCH_USERS } = require("./db/queries/queries");
-const { CreateMessage, GetAllMessages, GetAllUsers } = require("./db/helpers");
+const { CREATE_MESSAGE, FETCH_USER_MESSAGES } = require("./db/queries/queries");
+const { CreateMessage, GetAllMessages } = require("./db/helpers");
 
 //connecting to db
 client.connect();
@@ -40,43 +39,51 @@ const io = new Server(httpServer, {
   },
 });
 
-//test messages 
+//test messages
 io.on("connection", async (socket) => {
   console.log("New User");
- 
-  socket.on("user-messages", async ({ from, to}) => {
 
+  socket.on("user-messages", async ({ from, to }) => {
     // fetch all messages from the database
-    let allMessages = []
-    let { messages, error } = await GetAllMessages(client, FETCH_USER_MESSAGES, [from, to]);
+    let allMessages = [];
+    let { messages, error } = await GetAllMessages(
+      client,
+      FETCH_USER_MESSAGES,
+      [from, to]
+    );
     allMessages.push(...messages);
 
-    let response = await GetAllMessages(
-      client,
-      FETCH_USER_MESSAGES, [to, from]
-    );
-    allMessages.push(...response.messages)
+    let response = await GetAllMessages(client, FETCH_USER_MESSAGES, [
+      to,
+      from,
+    ]);
+    allMessages.push(...response.messages);
 
     socket.emit("messages", { messages: allMessages });
   });
 
   socket.on("message", async ({ from, to, message }) => {
-   // push the message into the database
-    let {msg, error} = await CreateMessage(client, CREATE_MESSAGE, [from, to, message]);
+    // push the message into the database
+    let { msg, error } = await CreateMessage(client, CREATE_MESSAGE, [
+      from,
+      to,
+      message,
+    ]);
 
     // fetch all messages from the database
-     let allMessages = []
+    let allMessages = [];
     let { messages, error: err } = await GetAllMessages(
       client,
-      FETCH_USER_MESSAGES, [from, to]
+      FETCH_USER_MESSAGES,
+      [from, to]
     );
-    allMessages.push(...messages)
+    allMessages.push(...messages);
 
-    let response = await GetAllMessages(
-      client,
-      FETCH_USER_MESSAGES, [to, from]
-    );
-    allMessages.push(...response.messages)
+    let response = await GetAllMessages(client, FETCH_USER_MESSAGES, [
+      to,
+      from,
+    ]);
+    allMessages.push(...response.messages);
 
     socket.broadcast.emit("messages", { messages: allMessages });
   });
