@@ -30,17 +30,13 @@ const Login = () => {
 
     //check on the value of btnText
     if (btnText === "LOGIN") {
-      const { data } = await axios.post("http://localhost:4000/auth/login", {
-        ...userDetails,
-      });
+      const { data } = await axios.post("http://localhost:4000/auth/login", userDetails);
       
       console.log(data)
     }
 
     if (btnText === "REGISTER") {
-      const { data } = await axios.post("http://localhost:4000/auth/register", {
-        ...userDetails,
-      });
+      const { data } = await axios.post("http://localhost:4000/auth/register", userDetails);
 
       console.log(data)
     }

@@ -21,11 +21,12 @@ const AddUser = async (req, res) => {
   //check whether username already exists in db
   const result1 = await FetchUserByUsername(client, FIND_USERNAME, [username]);
   if (result1.user != undefined) {
-    res.json({ error: "User already exists" }).status(400);
+    res.status(400).json({ error: "User already exists" });
     return;
   }
+
   if (result1.error) {
-    res.json({ error: error }).status(400);
+    res.status(400).json({ error: error });
     return;
   }
 
@@ -37,11 +38,11 @@ const AddUser = async (req, res) => {
   ]);
 
   if (error) {
-    res.json({ error }).status(500);
+    res.status(500).json({ error });
     return;
   }
 
-  res.json({ message: "Successfully Registered" }).status(201);
+  res.status(201).json({ message: "Successfully Registered" });
 };
 
 const LoginUser = async (req, res) => {
@@ -54,28 +55,28 @@ const LoginUser = async (req, res) => {
   ]);
 
   if (!user) {
-    res.json({ error: "Bad Credentials" }).status(401);
+    res.status(401).json({ error: "Bad Credentials" });
     return;
   }
 
   if (error) {
-    res.json({ error }).status(500);
+    res.status(500).json({ error });
     return;
   }
 
   //save the user in db
-  res.json({ message: "Login successful" }).status(200);
+  res.status(200).json({ message: "Login successful" });
 };
 
 const FetchAllUsers = async (req, res) => {
   const { users, error } = await GetAllUsers(client, FETCH_USERS);
 
   if (error) {
-    res.json({ error }).status(500);
+    res.status(500).json({ error });
     return;
   }
 
-  res.json({ users }).status(200);
+  res.status(200).json({ users });
 };
 
 const UpdateStatus = async (req, res) => {
@@ -85,7 +86,7 @@ const UpdateStatus = async (req, res) => {
   ]);
 
   if (error) {
-    res.json({ error }).status(500);
+    res.status(500).json({ error });
     return;
   }
 
