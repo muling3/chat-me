@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "🎯️ ChatMe",
   description:
     "ChatMe is web application enabling users to connect from different locations seamlessly",
-};subsets: ["latin", "devanagari"];
+};
 
 export default function RootLayout({
   children,
@@ -17,7 +17,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        />
+      </head>
       <body className={poppins.className}>{children}</body>
     </html>
-  )
+  );
 }
