@@ -54,7 +54,7 @@ export default function Home() {
         </div>
         <div className="menu-action min-h-full w-[55%] h-full overflow-y-auto overflow-x-hidden">
           <h1 className="header uppercase font-semibold">Chats</h1>
-          {10 > 1 && (
+          {10 < 1 && (
             <div className="no-msgs h-full w-full flex flex-col items-center justify-center">
               <span className="text-gray-500">No previous chats</span>
               <button className="btn px-4 py-2 rounded-xl shadow-innerneu1 text-gray-600">
@@ -62,7 +62,7 @@ export default function Home() {
               </button>
             </div>
           )}
-          {10 < 1 &&
+          {10 > 1 &&
             [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
               <div
                 className="user-item border-b-2 flex justify-start items-center w-full p-2 cursor-pointer"
