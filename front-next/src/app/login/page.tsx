@@ -1,9 +1,56 @@
+"use client";
+
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import Spacer from "@/components/Spacer";
+import axios from "axios";
 import Link from "next/link";
-import React from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
 
 const Login = () => {
+  const [errr, setErrr] = useState(false);
+
+  const [userDetails, setUserDetails] = useState<{
+    username: string;
+    password: string;
+  }>({
+    username: "",
+    password: "",
+  });
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setUserDetails((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const formSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("I was invocked");
+    //ensure user has filled
+    if (!userDetails.username || !userDetails.password) {
+      console.log("Fill in the form");
+      return;
+    }
+
+    console.log("userDEtails", userDetails)
+
+    //check on the value of btnText
+    const { data } = await axios.post(
+      "http://localhost:4000/auth/login",
+      userDetails
+    );
+
+    console.log(data);
+
+    // update status: Online or Offline
+    const res = await axios.post("http://localhost:4000/users/status", {
+      username: userDetails.username,
+      status: "Online",
+    });
+
+    //store the user login details in local storage after successful login
+    localStorage.setItem("user", JSON.stringify(userDetails));
+  };
+
   return (
     <div className="w-screen h-screen pt-5 text-[hsl(302,20%,30%)] flex flex-col justify-between">
       <div>
@@ -15,17 +62,31 @@ const Login = () => {
           <div className="drop-shadow-clay w-full m-1 sm:m-0 sm:w-1/3">
             <div className="w-full flex items-start gap-4 flex-col p-[20px] sm:p-[40px] rounded-[20px] sm:rounded-[40px] bg-white shadow-clay-card">
               <h2>Login Here</h2>
-              <Input placeholder="Enter username or email" type="text" />
-              <Input placeholder="Enter password" type="password" />
-              <div className="form-control w-full">
-                <label className="label cursor-pointer w-full">
-                  <span className="label-text text-[hsl(302,20%,30%)]">
-                    Remember me
-                  </span>
-                  <input type="checkbox" className="checkbox" />
-                </label>
-              </div>
-              <Button label="Login" styles="w-full" />
+              <form onSubmit={formSubmitHandler} className="w-full flex justify-between flex-col items-start">
+                <Input
+                  placeholder="Enter username or email"
+                  type="text"
+                  name={"username"}
+                  onChange={handleInputChange}
+                />
+                <Spacer />
+                <Input
+                  placeholder="Enter password"
+                  type="password"
+                  name={"password"}
+                  onChange={handleInputChange}
+                />
+                <div className="form-control w-full">
+                  <label className="label cursor-pointer w-full">
+                    <span className="label-text text-[hsl(302,20%,30%)]">
+                      Remember me
+                    </span>
+                    <input type="checkbox" className="checkbox" />
+                  </label>
+                </div>
+                <Button type="submit" label="Login" styles="w-full" />
+              </form>
+
               <div className="capitalize">
                 don't have an account?{" "}
                 <Link
