@@ -337,6 +337,7 @@ export default function Home() {
       <div className="footer flex justify-center items-start md:items-center">
         <small>
           Built by Alexander Muli / +254702051060 / alexandermuli234@gmail.com
+          &copy; 2024
         </small>
       </div>
     </main>

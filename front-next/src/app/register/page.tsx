@@ -50,6 +50,7 @@ const Register = () => {
       <div className="footer w-full flex justify-center items-start md:items-center mb-2">
         <small>
           Built by Alexander Muli / +254702051060 / alexandermuli234@gmail.com
+          &copy; 2024
         </small>
       </div>
     </div>

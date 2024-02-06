@@ -31,7 +31,7 @@ const Login = () => {
       return;
     }
 
-    console.log("userDEtails", userDetails)
+    console.log("userDEtails", userDetails);
 
     //check on the value of btnText
     const { data } = await axios.post(
@@ -62,7 +62,10 @@ const Login = () => {
           <div className="drop-shadow-clay w-full m-1 sm:m-0 sm:w-1/3">
             <div className="w-full flex items-start gap-4 flex-col p-[20px] sm:p-[40px] rounded-[20px] sm:rounded-[40px] bg-white shadow-clay-card">
               <h2>Login Here</h2>
-              <form onSubmit={formSubmitHandler} className="w-full flex justify-between flex-col items-start">
+              <form
+                onSubmit={formSubmitHandler}
+                className="w-full flex justify-between flex-col items-start"
+              >
                 <Input
                   placeholder="Enter username or email"
                   type="text"
@@ -103,6 +106,7 @@ const Login = () => {
       <div className="footer w-full flex justify-center items-start md:items-center mb-2">
         <small>
           Built by Alexander Muli / +254702051060 / alexandermuli234@gmail.com
+          &copy; 2024
         </small>
       </div>
     </div>

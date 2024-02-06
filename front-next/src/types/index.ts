@@ -2,7 +2,7 @@ import { ChangeEvent } from "react"
 
 export interface ButtonProps {
     label: string
-    type: "button" | "submit" | "reset" 
+    type?: "button" | "submit" | "reset" 
     styles?: string
     link?: string
 }
