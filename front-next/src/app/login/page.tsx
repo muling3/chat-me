@@ -6,9 +6,11 @@ import Spacer from "@/components/Spacer";
 import axios from "axios";
 import Link from "next/link";
 import React, { ChangeEvent, FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
   const [errr, setErrr] = useState(false);
+  const router = useRouter();
 
   const [userDetails, setUserDetails] = useState<{
     username: string;
@@ -24,7 +26,6 @@ const Login = () => {
 
   const formSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("I was invocked");
     //ensure user has filled
     if (!userDetails.username || !userDetails.password) {
       console.log("Fill in the form");
@@ -34,21 +35,35 @@ const Login = () => {
     console.log("userDEtails", userDetails);
 
     //check on the value of btnText
-    const { data } = await axios.post(
-      "http://localhost:4000/auth/login",
-      userDetails
-    );
+    try {
+      const { data, status } = await axios.post(
+        "http://localhost:4000/auth/login",
+        userDetails
+      );
+      console.log("backedn status", status);
 
-    console.log(data);
+      console.log(data);
+    } catch (error) {
+      console.log(" errro  occurred ", error);
+      return;
+    }
 
     // update status: Online or Offline
-    const res = await axios.post("http://localhost:4000/users/status", {
-      username: userDetails.username,
-      status: "Online",
-    });
+    try {
+      const res = await axios.post("http://localhost:4000/users/status", {
+        username: userDetails.username,
+        status: "Online",
+      });
+    } catch (error) {
+      console.log(" errro  occurred ", error);
+      return;
+    }
 
     //store the user login details in local storage after successful login
     localStorage.setItem("user", JSON.stringify(userDetails));
+
+    // navigate to home page
+    router.push("/");
   };
 
   return (

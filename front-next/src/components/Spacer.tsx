@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const Spacer = () => {
-  return (
-    <div className="w-full my-2"></div>
-  )
-}
+  return <div className="w-full my-3"></div>;
+};
 
-export default Spacer
+export default Spacer;
