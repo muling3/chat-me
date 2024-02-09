@@ -16,7 +16,7 @@ const {
 } = require("./db/queries/queries");
 
 const AddUser = async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, firstname, lastname, email, img } = req.body;
 
   //check whether username already exists in db
   const result1 = await FetchUserByUsername(client, FIND_USERNAME, [username]);
@@ -32,12 +32,17 @@ const AddUser = async (req, res) => {
 
   //save the user in db
   const { user, error } = await InsertUser(client, INSERT_USER, [
+    firstname ? firstname : null,
+    lastname ? lastname : null,
+    email ? email : null,
+    img ? img : null,
     username,
     password,
     "Offline",
   ]);
 
   if (error) {
+    console.log("ERROR 45", error);
     res.status(500).json({ error });
     return;
   }
