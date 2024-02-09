@@ -17,7 +17,7 @@ const {
 
 const AddUser = async (req, res) => {
   const { username, password } = req.body;
-  
+
   //check whether username already exists in db
   const result1 = await FetchUserByUsername(client, FIND_USERNAME, [username]);
   if (result1.user != undefined) {
@@ -64,7 +64,19 @@ const LoginUser = async (req, res) => {
     return;
   }
 
-  //save the user in db
+  // update the user online status
+  const { rows, error: err } = await UpdateUserStatus(client, UPDATE_STATUS, [
+    "Online",
+    username,
+  ]);
+
+  // throw internal server error
+  if (err) {
+    res.status(500).json({ error: err });
+    return;
+  }
+
+  // respond with a success status
   res.status(200).json({ message: "Login successful" });
 };
 
