@@ -21,6 +21,12 @@ app.use(cors());
 // json middleware
 app.use(express.json());
 
+// for testing dynamic endpoints without registering the method
+app.use("/", (req, res, next) => {
+  // console.log("Samp is acting as a middleware here mehn!!");
+  next();
+});
+
 // adding auth routes middleware
 app.use(require("./routes"));
 
