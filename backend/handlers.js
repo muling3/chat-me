@@ -42,7 +42,6 @@ const AddUser = async (req, res) => {
   ]);
 
   if (error) {
-    console.log("ERROR 45", error);
     res.status(500).json({ error });
     return;
   }
@@ -60,7 +59,9 @@ const LoginUser = async (req, res) => {
   ]);
 
   if (!user) {
-    res.status(401).json({ error: "Bad Credentials" });
+    res
+      .status(401)
+      .json({ error: "Bad Credentials or Account Does Not Exist!" });
     return;
   }
 
