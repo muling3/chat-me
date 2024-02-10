@@ -9,6 +9,7 @@ import React, { ChangeEvent, FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const Login = () => {
+  const API_URL = process.env.API_URL || "http://localhost:4000";
   const [errr, setErrr] = useState(false);
   const router = useRouter();
 
@@ -37,23 +38,12 @@ const Login = () => {
     //check on the value of btnText
     try {
       const { data, status } = await axios.post(
-        "http://localhost:4000/auth/login",
+        `${API_URL}/auth/login`,
         userDetails
       );
       console.log("backedn status", status);
 
       console.log(data);
-    } catch (error) {
-      console.log(" errro  occurred ", error);
-      return;
-    }
-
-    // update status: Online or Offline
-    try {
-      const res = await axios.post("http://localhost:4000/users/status", {
-        username: userDetails.username,
-        status: "Online",
-      });
     } catch (error) {
       console.log(" errro  occurred ", error);
       return;

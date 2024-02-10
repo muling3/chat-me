@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import Spacer from "@/components/Spacer";
 
 const Register = () => {
+  const API_URL = process.env.API_URL || "http://localhost:4000";
   const router = useRouter();
 
   const [userDetails, setUserDetails] = useState<{
@@ -50,7 +51,7 @@ const Register = () => {
     //check on the value of btnText
     try {
       const { data } = await axios.post(
-        "http://localhost:4000/auth/register",
+        `${API_URL}/auth/register`,
         userDetails
       );
 
