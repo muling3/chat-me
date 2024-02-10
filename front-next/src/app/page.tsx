@@ -1,11 +1,41 @@
 "use client";
 
+import { Fragment } from "react";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios, { AxiosResponse } from "axios";
+import { io, Socket } from "socket.io-client";
+import { formatDistance } from "date-fns";
 
+interface User {
+  id: number;
+  username: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  password?: string;
+  status: string;
+  img?: string;
+}
+
+interface Message {
+  id: number;
+  send_from: string;
+  send_to: string;
+  message: string;
+  created_at: string;
+}
+
+let userInfo: User;
+let client: Socket;
 export default function Home() {
+  const API_URL = process.env.API_URL || "http://localhost:4000";
+  const [usersList, setUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User>();
+  const [messagesList, setMessages] = useState<Message[]>([]);
+
   const [title, setTitle] = useState("friends");
   const [selected, setSelected] = useState<{
     msgs?: {
@@ -42,6 +72,36 @@ export default function Home() {
       bg: "",
     },
   });
+
+  // fetch currently logged in user
+  useEffect(() => {
+    userInfo = JSON.parse(localStorage.getItem("user") as string);
+    console.log("userinfo", userInfo);
+  }, []);
+
+  // get all users
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/users`)
+      .then((d: AxiosResponse<{ users: User[]; error: String }>) =>
+        setUsers(d.data.users.filter((u) => u.username != userInfo.username))
+      )
+      .catch((err) => console.log(err));
+  }, []);
+
+  const handleSendMessage = () => {
+    let userInput: HTMLInputElement = document.getElementById(
+      "message"
+    ) as HTMLInputElement;
+    client.emit("message", {
+      from: userInfo?.username,
+      to: selectedUser!.username,
+      message: userInput.value,
+    });
+
+    // clearing the message input
+    userInput.value = "";
+  };
 
   const handleMenuItemClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -82,6 +142,32 @@ export default function Home() {
       });
       setTitle("settings");
     }
+  };
+
+  const handleUserSelection = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    user: User
+  ) => {
+    e.preventDefault();
+
+    // change the state on chats screen
+    setSelectedUser(user);
+
+    // fetch messages
+    client = io(`${API_URL}`);
+    client.emit("user-messages", {
+      from: userInfo?.username,
+      to: user.username,
+    });
+
+    client.on("messages", (arg: { messages: Message[] }) => {
+      // sorting the messages by id so that they can be logged as they were sent
+      arg.messages.sort(function (a, b) {
+        return a.id - b.id;
+      });
+
+      setMessages(arg.messages);
+    });
   };
 
   return (
@@ -130,19 +216,23 @@ export default function Home() {
           </div>
           <div className="menu-action min-h-full w-[88%] h-full overflow-y-auto overflow-x-hidden">
             <h1 className="header uppercase font-semibold">{title}</h1>
-            {10 < 1 && (
+            {title === "friends" && usersList.length == 0 && (
               <div className="no-msgs h-full w-full flex flex-col items-center justify-center">
-                <span className="text-gray-500">No previous chats</span>
+                <span className="text-gray-500">
+                  Can't locate friends nearby
+                </span>
                 <button className="btn px-4 py-2 rounded-xl shadow-innerneu1 text-gray-600">
                   Make Friends
                 </button>
               </div>
             )}
-            {10 > 1 &&
-              [1, 2, 3, 4, 5].map((n) => (
+            {title === "friends" &&
+              usersList.length >= 1 &&
+              usersList.map((u, i) => (
                 <div
-                  className="user-item border-b-2 flex justify-start items-center w-full p-2 cursor-pointer"
-                  key={`${n}`}
+                  className="user-item border-b-2 flex justify-start items-center w-full p-2 cursor-pointer duration-500 hover:bg-blue-200 hover:text-white"
+                  key={`${i}`}
+                  onClick={(e) => handleUserSelection(e, u)}
                 >
                   <div className="avatar mr-2">
                     <div className="w-12 mask mask-squircle">
@@ -156,9 +246,9 @@ export default function Home() {
                   </div>
                   <div className="user-info">
                     <p className="username font-medium text-gray-800">
-                      Johnnnie
+                      {u.username}
                     </p>
-                    <small className="fullname text-gray-500">John Doe</small>
+                    <small className="fullname text-gray-500">{`${u.firstname} ${u.lastname}`}</small>
                   </div>
                 </div>
               ))}
@@ -178,8 +268,12 @@ export default function Home() {
                 </div>
               </div>
               <div className="user-info">
-                <p className="username font-medium text-gray-800">Johnnnie</p>
-                <small className="fullname text-gray-500">Online</small>
+                <p className="username font-medium text-gray-800">
+                  {selectedUser?.username}
+                </p>
+                <small className="fullname text-gray-500">
+                  {selectedUser?.status}
+                </small>
               </div>
             </div>
             <div className="actio-items flex">
@@ -195,134 +289,78 @@ export default function Home() {
             </div>
           </div>
           <div className="conversations w-full p-4 flex-1 overflow-x-hidden overflow-y-auto">
-            {1 > 10 && (
+            {messagesList && messagesList.length == 0 && (
               <div className="no-msgs h-full w-full flex flex-col items-center justify-center">
                 <span className="text-gray-500">
-                  No previos communication with Johnnie
+                  No previous communication with{" "}
+                  <span className="bg-blue-500 text-white uppercase p-1">
+                    {selectedUser?.username}
+                  </span>
                 </span>
-                <button className="btn px-4 py-2 rounded-xl shadow-innerneu1 text-gray-600">
+                <button className="btn px-4 py-2 rounded-xl shadow-innerneu1 text-gray-600 my-1">
                   Start conversation
                 </button>
               </div>
             )}
-            {10 > 1 && (
-              <>
-                <div className="chat chat-start">
-                  <div className="chat-image avatar">
-                    <div className="w-10 rounded-full">
-                      <Image
-                        src="profile_4.svg"
-                        alt="this profile photo"
-                        width={`100`}
-                        height={100}
-                      />
+            {messagesList &&
+              messagesList.length >= 1 &&
+              messagesList.map((m, i) => (
+                <Fragment key={i}>
+                  {m.send_to == userInfo.username && (
+                    <div className="chat chat-start" key={i}>
+                      <div className="chat-image avatar">
+                        <div className="w-10 rounded-full">
+                          <Image
+                            src="profile_4.svg"
+                            alt="this profile photo"
+                            width={`100`}
+                            height={100}
+                          />
+                        </div>
+                      </div>
+                      <div className="chat-header">
+                        {m.send_from}{" "}
+                        <time className="text-xs opacity-50">
+                          {formatDistance(m.created_at, new Date(), {
+                            addSuffix: true,
+                          })}
+                        </time>
+                      </div>
+                      <div className="chat-bubble">{m.message}</div>
+                      <div className="chat-footer opacity-50">Delivered</div>
                     </div>
-                  </div>
-                  <div className="chat-header">
-                    Obi-Wan Kenobi
-                    <time className="text-xs opacity-50">12:45</time>
-                  </div>
-                  <div className="chat-bubble">You were the Chosen One!</div>
-                  <div className="chat-footer opacity-50">Delivered</div>
-                </div>
-                <div className="chat chat-end">
-                  <div className="chat-image avatar">
-                    <div className="w-10 rounded-full">
-                      <Image
-                        src="profile_2.svg"
-                        alt="this profile photo"
-                        width={`100`}
-                        height={100}
-                      />
+                  )}
+                  {m.send_from == userInfo.username && (
+                    <div className="chat chat-end" key={i}>
+                      <div className="chat-image avatar">
+                        <div className="w-10 rounded-full">
+                          <Image
+                            src="profile_2.svg"
+                            alt="this profile photo"
+                            width={`100`}
+                            height={100}
+                          />
+                        </div>
+                      </div>
+                      <div className="chat-header">
+                        {m.send_from}{" "}
+                        <time className="text-xs opacity-50">
+                          {formatDistance(m.created_at, new Date(), {
+                            addSuffix: true,
+                          })}
+                        </time>
+                      </div>
+                      <div className="chat-bubble">{m.message}</div>
+                      <div className="chat-footer opacity-50">
+                        Seen at{" "}
+                        {formatDistance(m.created_at, new Date(), {
+                          addSuffix: true,
+                        })}
+                      </div>
                     </div>
-                  </div>
-                  <div className="chat-header">
-                    Anakin
-                    <time className="text-xs opacity-50">12:46</time>
-                  </div>
-                  <div className="chat-bubble">I hate you!</div>
-                  <div className="chat-footer opacity-50">Seen at 12:46</div>
-                </div>
-                <div className="chat chat-end">
-                  <div className="chat-image avatar">
-                    <div className="w-10 rounded-full">
-                      <Image
-                        src="profile_2.svg"
-                        alt="this profile photo"
-                        width={`100`}
-                        height={100}
-                      />
-                    </div>
-                  </div>
-                  <div className="chat-header">
-                    Anakin
-                    <time className="text-xs opacity-50">12:46</time>
-                  </div>
-                  <div className="chat-bubble">Mother fucker!</div>
-                  <div className="chat-footer opacity-50">Seen at 12:46</div>
-                </div>
-                <div className="chat chat-end">
-                  <div className="chat-image avatar">
-                    <div className="w-10 rounded-full">
-                      <Image
-                        src="profile_2.svg"
-                        alt="this profile photo"
-                        width={`100`}
-                        height={100}
-                      />
-                    </div>
-                  </div>
-                  <div className="chat-header">
-                    Anakin
-                    <time className="text-xs opacity-50">12:46</time>
-                  </div>
-                  <div className="chat-bubble">
-                    Na ukaage ukijua we n fala sana!
-                  </div>
-                  <div className="chat-footer opacity-50">Seen at 12:46</div>
-                </div>
-                <div className="chat chat-start">
-                  <div className="chat-image avatar">
-                    <div className="w-10 rounded-full">
-                      <Image
-                        src="profile_4.svg"
-                        alt="this profile photo"
-                        width={`100`}
-                        height={100}
-                      />
-                    </div>
-                  </div>
-                  <div className="chat-header">
-                    Obi-Wan Kenobi
-                    <time className="text-xs opacity-50">12:48</time>
-                  </div>
-                  <div className="chat-bubble">
-                    I'm going to repeat again,You were the Chosen One!
-                  </div>
-                  <div className="chat-footer opacity-50">Delivered</div>
-                </div>
-                <div className="chat chat-start">
-                  <div className="chat-image avatar">
-                    <div className="w-10 rounded-full">
-                      <Image
-                        src="profile_4.svg"
-                        alt="this profile photo"
-                        width={`100`}
-                        height={100}
-                      />
-                    </div>
-                  </div>
-                  <div className="chat-header">
-                    Obi-Wan Kenobi
-                    <time className="text-xs opacity-50">12:48</time>
-                  </div>
-                  <div className="chat-bubble">
-                    And once more, You were the Chosen One!
-                  </div>
-                  <div className="chat-footer opacity-50">Delivered</div>
-                </div>
-              </>
-            )}
+                  )}
+                </Fragment>
+              ))}
           </div>
           <div className="send w-full flex justify-between items-center p-4">
             <Input
