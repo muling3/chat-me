@@ -89,7 +89,23 @@ export default function Home() {
       .catch((err) => console.log(err));
   }, []);
 
-  const handleSendMessage = () => {
+  useEffect(() => {
+    client = io(`${API_URL}`);
+    client.on("messages", (arg: { messages: Message[] }) => {
+      // sorting the messages by id so that they can be logged as they were sent
+      arg.messages.sort(function (a, b) {
+        return a.id - b.id;
+      });
+
+      // check where selected.username and userInfo.username match   :: NOT WORKING, ON PROGRESS
+      selectedUser?.username === arg.messages[0].send_from ||
+      selectedUser?.username === arg.messages[0].send_to
+        ? setMessages(arg.messages)
+        : null;
+    });
+  }, []);
+
+  const handleSendMessage = (e: React.MouseEvent) => {
     let userInput: HTMLInputElement = document.getElementById(
       "message"
     ) as HTMLInputElement;
@@ -364,11 +380,16 @@ export default function Home() {
           </div>
           <div className="send w-full flex justify-between items-center p-4">
             <Input
+              name="message"
               placeholder="Type your message here ...."
               styles="w-full mr-3 border-2"
               type="text"
             />
-            <Button label="Send" styles="w-24" />
+            <Button
+              label="Send"
+              styles="w-24 hover:bg-blue-500 hover:text-white"
+              onClick={handleSendMessage}
+            />
           </div>
         </div>
       </div>

@@ -1,11 +1,20 @@
 import { InputProps } from "@/types";
 import React, { FC } from "react";
 
-const Input: FC<InputProps> = ({ type, name, placeholder, styles, onChange }) => {
+const Input: FC<InputProps> = ({
+  type,
+  name,
+  placeholder,
+  styles,
+  onChange,
+}) => {
   return (
     <input
-    name={name}
-      className={`w-full p-3 outline-none rounded-lg shadow-clay-card ${styles ? styles : ''}`}
+      id={name}
+      name={name}
+      className={`w-full p-3 outline-none rounded-lg shadow-clay-card ${
+        styles ? styles : ""
+      }`}
       type={type}
       placeholder={placeholder}
       onChange={onChange}
