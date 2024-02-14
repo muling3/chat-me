@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
 import { io, Socket } from "socket.io-client";
 import { formatDistance } from "date-fns";
+import { useRouter } from "next/navigation";
 
 interface User {
   id: number;
@@ -30,11 +31,13 @@ interface Message {
 
 let userInfo: User;
 let client: Socket;
+
 export default function Home() {
   const API_URL = process.env.API_URL || "http://localhost:4000";
   const [usersList, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User>();
   const [messagesList, setMessages] = useState<Message[]>([]);
+  const router = useRouter();
 
   const [title, setTitle] = useState("friends");
   const [selected, setSelected] = useState<{
@@ -72,6 +75,8 @@ export default function Home() {
       bg: "",
     },
   });
+
+  // And btw ningemake leo ningekutafuta to just see u happy
 
   // fetch currently logged in user
   useEffect(() => {
@@ -186,6 +191,26 @@ export default function Home() {
     });
   };
 
+  const handleLogout = (e: React.MouseEvent) => {
+    // prevent default
+    e.preventDefault();
+
+    //update the user status to online
+    axios
+      .post(`${API_URL}/users/status`, {
+        username: userInfo.username,
+        status: "Offline",
+      })
+      .then((d) => {
+        //remove the user from local storage
+        localStorage.removeItem("user");
+
+        // navigate to homepage
+        router.replace("/");
+      })
+      .catch((err) => console.log("error logging out", err));
+  };
+
   return (
     <main className="w-screen h-screen px-24 py-10 relative overflow-hidden">
       <div className="logo text-start sticky top-0 z-50 mb-3">
@@ -227,6 +252,13 @@ export default function Home() {
                 <span className="material-symbols-outlined">
                   settings_heart
                 </span>
+              </button>
+              <button
+                className={`btn outline-none menu-item flex justify-start items-center p-3 border-none hover:text-white hover:bg-blue-400 rounded-md shadow-innerneu1 relative mt-6 ${selected.settings?.text} ${selected.settings?.bg}`}
+                name="logout"
+                onClick={handleLogout}
+              >
+                <span className="material-symbols-outlined">logout</span>
               </button>
             </div>
           </div>
