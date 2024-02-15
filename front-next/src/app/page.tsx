@@ -206,7 +206,7 @@ export default function Home() {
         localStorage.removeItem("user");
 
         // navigate to homepage
-        router.replace("/");
+        router.replace("/login");
       })
       .catch((err) => console.log("error logging out", err));
   };
