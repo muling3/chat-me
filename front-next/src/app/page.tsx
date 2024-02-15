@@ -339,15 +339,29 @@ export default function Home() {
           <div className="conversations w-full p-4 flex-1 overflow-x-hidden overflow-y-auto">
             {messagesList && messagesList.length == 0 && (
               <div className="no-msgs h-full w-full flex flex-col items-center justify-center">
-                <span className="text-gray-500">
-                  No previous communication with{" "}
-                  <span className="bg-blue-500 text-white uppercase p-1">
-                    {selectedUser?.username}
+                {selectedUser && (
+                  <>
+                    {" "}
+                    <span className="text-gray-500">
+                      No previous communication with{" "}
+                      <span className="bg-blue-500 text-white uppercase p-1">
+                        {selectedUser?.username}
+                      </span>
+                    </span>
+                    <button className="btn px-4 py-2 rounded-xl shadow-innerneu1 text-gray-600 my-1">
+                      Start conversation
+                    </button>
+                  </>
+                )}
+                {!selectedUser && (
+                  <span className="text-gray-500">
+                    Please choose a friend to chat or view previous
+                    conversation!!!
+                    {/* <span className="bg-blue-500 text-white uppercase p-1">
+                      {selectedUser?.username}
+                    </span> */}
                   </span>
-                </span>
-                <button className="btn px-4 py-2 rounded-xl shadow-innerneu1 text-gray-600 my-1">
-                  Start conversation
-                </button>
+                )}
               </div>
             )}
             {messagesList &&
