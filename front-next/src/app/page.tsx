@@ -81,6 +81,10 @@ export default function Home() {
   // fetch currently logged in user
   useEffect(() => {
     userInfo = JSON.parse(localStorage.getItem("user") as string);
+    // restrict to logged in users only
+    if (!userInfo) {
+      router.replace("/login");
+    }
     console.log("userinfo", userInfo);
   }, []);
 
@@ -210,6 +214,16 @@ export default function Home() {
       })
       .catch((err) => console.log("error logging out", err));
   };
+
+  if (!userInfo) {
+    return (
+      <main className="w-screen h-screen px-24 py-10 flex justify-center items-center overflow-hidden">
+        <span className="text-gray-500">
+          Ooops!!! It seems you are not logged in buddy!!!!
+        </span>
+      </main>
+    );
+  }
 
   return (
     <main className="w-screen h-screen px-24 py-10 relative overflow-hidden">
