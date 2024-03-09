@@ -76,8 +76,6 @@ export default function Home() {
     },
   });
 
-  // And btw ningemake leo ningekutafuta to just see u happy
-
   // fetch currently logged in user
   useEffect(() => {
     userInfo = JSON.parse(localStorage.getItem("user") as string);
