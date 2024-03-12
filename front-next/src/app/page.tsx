@@ -10,6 +10,9 @@ import { io, Socket } from "socket.io-client";
 import { formatDistance } from "date-fns";
 import { useRouter } from "next/navigation";
 
+//scroll to bottom
+import ScrollToBottom from "react-scroll-to-bottom";
+
 interface User {
   id: number;
   username: string;
@@ -404,92 +407,97 @@ export default function Home() {
             </div>
           </div>
           <div className="conversations w-full p-4 flex-1 overflow-x-hidden overflow-y-auto">
-            {messagesList && messagesList.length == 0 && (
-              <div className="no-msgs h-full w-full flex flex-col items-center justify-center">
-                {selectedUser && (
-                  <>
-                    {" "}
-                    <span className="text-gray-500">
-                      No previous communication with{" "}
-                      <span className="bg-blue-500 text-white uppercase p-1">
-                        {selectedUser?.username}
+            <ScrollToBottom
+              className="scroll-area"
+              scrollViewClassName="chat-area"
+            >
+              {messagesList && messagesList.length == 0 && (
+                <div className="no-msgs h-full w-full flex flex-col items-center justify-center">
+                  {selectedUser && (
+                    <>
+                      {" "}
+                      <span className="text-gray-500">
+                        No previous communication with{" "}
+                        <span className="bg-blue-500 text-white uppercase p-1">
+                          {selectedUser?.username}
+                        </span>
                       </span>
-                    </span>
-                    <button className="btn px-4 py-2 rounded-xl shadow-innerneu1 text-gray-600 my-1">
-                      Start conversation
-                    </button>
-                  </>
-                )}
-                {!selectedUser && (
-                  <span className="text-gray-500">
-                    Please choose a friend to chat or view previous
-                    conversation!!!
-                    {/* <span className="bg-blue-500 text-white uppercase p-1">
+                      <button className="btn px-4 py-2 rounded-xl shadow-innerneu1 text-gray-600 my-1">
+                        Start conversation
+                      </button>
+                    </>
+                  )}
+                  {!selectedUser && (
+                    <span className="text-gray-500">
+                      Please choose a friend to chat or view previous
+                      conversation!!!
+                      {/* <span className="bg-blue-500 text-white uppercase p-1">
                       {selectedUser?.username}
                     </span> */}
-                  </span>
-                )}
-              </div>
-            )}
-            {messagesList &&
-              messagesList.length >= 1 &&
-              messagesList.map((m, i) => (
-                <Fragment key={i}>
-                  {m.send_to == userInfo.username && (
-                    <div className="chat chat-start" key={i}>
-                      <div className="chat-image avatar">
-                        <div className="w-10 rounded-full">
-                          <Image
-                            src="profile_4.svg"
-                            alt="this profile photo"
-                            width={`100`}
-                            height={100}
-                          />
+                    </span>
+                  )}
+                </div>
+              )}
+              {messagesList &&
+                messagesList.length >= 1 &&
+                messagesList.map((m, i) => (
+                  <Fragment key={i}>
+                    {m.send_to == userInfo.username && (
+                      <div className="chat chat-start" key={i}>
+                        <div className="chat-image avatar">
+                          <div className="w-10 rounded-full">
+                            <Image
+                              src="profile_4.svg"
+                              alt="this profile photo"
+                              width={`100`}
+                              height={100}
+                            />
+                          </div>
                         </div>
+                        <div className="chat-header">
+                          {m.send_from}{" "}
+                          <time className="text-xs opacity-50">
+                            {formatDistance(m.created_at, new Date(), {
+                              addSuffix: true,
+                            })}
+                          </time>
+                        </div>
+                        <div className="chat-bubble">{m.message}</div>
+                        <div className="chat-footer opacity-50">Delivered</div>
                       </div>
-                      <div className="chat-header">
-                        {m.send_from}{" "}
-                        <time className="text-xs opacity-50">
+                    )}
+                    {m.send_from == userInfo.username && (
+                      <div className="chat chat-end" key={i}>
+                        <div className="chat-image avatar">
+                          <div className="w-10 rounded-full">
+                            <Image
+                              src="profile_2.svg"
+                              alt="this profile photo"
+                              width={`100`}
+                              height={100}
+                            />
+                          </div>
+                        </div>
+                        <div className="chat-header">
+                          {m.send_from}{" "}
+                          <time className="text-xs opacity-50">
+                            {formatDistance(m.created_at, new Date(), {
+                              addSuffix: true,
+                            })}
+                          </time>
+                        </div>
+                        <div className="chat-bubble">{m.message}</div>
+                        <div className="chat-footer opacity-50">
+                          Seen at{" "}
                           {formatDistance(m.created_at, new Date(), {
                             addSuffix: true,
                           })}
-                        </time>
-                      </div>
-                      <div className="chat-bubble">{m.message}</div>
-                      <div className="chat-footer opacity-50">Delivered</div>
-                    </div>
-                  )}
-                  {m.send_from == userInfo.username && (
-                    <div className="chat chat-end" key={i}>
-                      <div className="chat-image avatar">
-                        <div className="w-10 rounded-full">
-                          <Image
-                            src="profile_2.svg"
-                            alt="this profile photo"
-                            width={`100`}
-                            height={100}
-                          />
                         </div>
                       </div>
-                      <div className="chat-header">
-                        {m.send_from}{" "}
-                        <time className="text-xs opacity-50">
-                          {formatDistance(m.created_at, new Date(), {
-                            addSuffix: true,
-                          })}
-                        </time>
-                      </div>
-                      <div className="chat-bubble">{m.message}</div>
-                      <div className="chat-footer opacity-50">
-                        Seen at{" "}
-                        {formatDistance(m.created_at, new Date(), {
-                          addSuffix: true,
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </Fragment>
-              ))}
+                    )}
+                  </Fragment>
+                ))}
+            </ScrollToBottom>
           </div>
           <div className="send w-full flex justify-between items-center p-4">
             <Input
