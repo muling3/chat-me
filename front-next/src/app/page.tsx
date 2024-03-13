@@ -119,7 +119,6 @@ export default function Home() {
         });
 
         setMessages((prev) => {
-          console.log("previous messages ", prev);
           return [...prev, ...arg.messages];
         });
       }
@@ -219,14 +218,17 @@ export default function Home() {
       to: user.username,
     });
 
-    client.on("messages", (arg: { messages: Message[] }) => {
-      // sorting the messages by id so that they can be logged as they were sent
-      arg.messages.sort(function (a, b) {
-        return a.id - b.id;
-      });
+    client.on(
+      `${userInfo.username}-${user.username}`,
+      (arg: { messages: Message[] }) => {
+        // sorting the messages by id so that they can be logged as they were sent
+        arg.messages.sort(function (a, b) {
+          return a.id - b.id;
+        });
 
-      setMessages(arg.messages);
-    });
+        setMessages(arg.messages);
+      }
+    );
   };
 
   const handleLogout = (e: React.MouseEvent) => {
@@ -388,6 +390,7 @@ export default function Home() {
             <ScrollToBottom
               className="scroll-area"
               scrollViewClassName="chat-area"
+              initialScrollBehavior="auto"
             >
               {messagesList && messagesList.length == 0 && (
                 <div className="no-msgs h-full w-full flex flex-col items-center justify-center">

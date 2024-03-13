@@ -64,8 +64,7 @@ io.on("connection", async (socket) => {
       from,
     ]);
     allMessages.push(...response.messages);
-
-    socket.emit("messages", { messages: allMessages });
+    socket.emit(`${from}-${to}`, { messages: allMessages });
   });
 
   socket.on("message", async ({ from, to, message }) => {
@@ -91,7 +90,7 @@ io.on("connection", async (socket) => {
     ]);
     allMessages.push(...response.messages);
 
-    socket.broadcast.emit( `${from}-${to}`,{ messages: allMessages });
+    socket.broadcast.emit(`${from}-${to}`, { messages: allMessages });
   });
 
   socket.on("disconnect", () => {
