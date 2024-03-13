@@ -141,7 +141,12 @@ export default function Home() {
         });
       }
     );
-  }, [selectedUser?.id]);
+
+    // cleanup
+    return () => {
+      client.disconnect();
+    };
+  }, [selectedUser?.id, userInfo.id]);
 
   const handleSendMessage = (e: React.MouseEvent) => {
     let userInput: HTMLInputElement = document.getElementById(
