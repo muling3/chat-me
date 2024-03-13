@@ -105,6 +105,10 @@ export default function Home() {
       `from - to details => ${userInfo.username}-${selectedUser?.username}`
     );
 
+    console.log(
+      `communication channel ${selectedUser?.username}-${userInfo?.username}`
+    );
+
     client.on(
       `${selectedUser?.username}-${userInfo?.username}`,
       (arg: { messages: Message[] }) => {
@@ -130,42 +134,11 @@ export default function Home() {
         });
 
         console.log("MESSAGES ", arg.messages);
-        // console.log(
-        //   " message from ",
-        //   arg.messages[0].send_from,
-        //   " message to ",
-        //   arg.messages[0].send_to
-        // );
-        // setMessages(arg.messages);
 
-        // check where selected.username and userInfo.username match   :: NOT WORKING, ON PROGRESS
-        // let currUsers = [selectedUser?.username, userInfo.username];
-        // let foundSource = currUsers.find((u) => u == arg.messages[0].send_from);
-        // let foundRecipient = currUsers.find((u) => u == arg.messages[0].send_to);
-        // console.log(
-        //   " FOUND SOURCE ",
-        //   foundSource,
-        //   " FOUND  RECIPIENT ",
-        //   foundRecipient,
-        //   "CURRENT USERS ",
-        //   currUsers
-        // );
-        // console.log(
-        //   "CURRENT MESSAGES ",
-        //   messagesList,
-        //   " FETCHED MESSAGES ",
-        //   arg.messages
-        // );
-        // if (foundSource && foundRecipient) {
         setMessages((prev) => {
           console.log("previous messages ", prev);
           return [...prev, ...arg.messages];
         });
-        // }
-        // selectedUser?.username === arg.messages[0].send_from ||
-        // selectedUser?.username === arg.messages[0].send_to
-        //   ? setMessages(arg.messages)
-        //   : null;
       }
     );
   }, [selectedUser?.id]);
