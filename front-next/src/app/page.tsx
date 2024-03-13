@@ -146,7 +146,7 @@ export default function Home() {
     return () => {
       client.disconnect();
     };
-  }, [selectedUser?.id, userInfo.id]);
+  }, [selectedUser?.id]);
 
   const handleSendMessage = (e: React.MouseEvent) => {
     let userInput: HTMLInputElement = document.getElementById(
