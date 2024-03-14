@@ -40,6 +40,7 @@ export default function Home() {
   const [usersList, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User>();
   const [messagesList, setMessages] = useState<Message[]>([]);
+  const [refresh, setRefresh] = useState<string>("");
   const router = useRouter();
 
   const [title, setTitle] = useState("friends");
@@ -132,8 +133,6 @@ export default function Home() {
           return a.id - b.id;
         });
 
-        console.log("MESSAGES ", arg.messages);
-
         setMessages((prev) => {
           console.log("previous messages ", prev);
           return [...prev, ...arg.messages];
@@ -159,6 +158,9 @@ export default function Home() {
 
     // clearing the message input
     userInput.value = "";
+
+    // set refresh
+    // setRefresh(userInput.value);
   };
 
   const handleMenuItemClick = (
