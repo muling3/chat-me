@@ -72,51 +72,64 @@ const Register = () => {
           <span className="font-extrabold text-blue-400 text-3xl">Chat</span>
           <span className="text-gray-500 font-bold text-xl">Me</span>
         </div>
-        <div className="flex justify-center items-start md:items-center">
+        <div className="flex justify-center items-center flex-wrap md:items-center drop-shadow-clay w-full m-1 sm:m-0">
           <div className="drop-shadow-clay w-full m-1 sm:m-0 sm:w-2/3">
             <div className="w-full p-[20px] sm:p-[40px] rounded-[20px] sm:rounded-[40px] bg-white shadow-clay-card">
               <h2 className="col-span-1 sm:col-span-2">Register Here</h2>
               <Spacer />
               <form
                 onSubmit={formSubmitHandler}
-                className="w-full grid grid-cols-1 sm:grid-cols-2 place-content-center gap-4 "
+                // className="w-full grid grid-cols-1 sm:grid-cols-2 place-content-center gap-4"
+                className="flex justify-start items-start flex-wrap gap-2 w-full"
               >
-                <Input
-                  placeholder="Enter username"
-                  type="text"
-                  name="username"
-                  onChange={handleInputChange}
-                />
-                <Input
-                  placeholder="Enter firstname"
-                  type="text"
-                  name="firstname"
-                  onChange={handleInputChange}
-                />
-                <Input
-                  placeholder="Enter lastname"
-                  type="text"
-                  name="lastname"
-                  onChange={handleInputChange}
-                />
-                <Input
-                  placeholder="Enter email"
-                  type="email"
-                  name="email"
-                  onChange={handleInputChange}
-                />
-                <Input
-                  placeholder="Enter password"
-                  type="password"
-                  name="password"
-                  onChange={handleInputChange}
-                />
-                <Input
-                  placeholder="Confirm password"
-                  type="password"
-                  name="confirmPassword"
-                  onChange={handleInputChange}
-                />{" "}
+                <div className="min-w-[100%] sm:min-w-[45%]">
+                  <Input
+                    placeholder="Enter username"
+                    type="text"
+                    name="username"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="min-w-[100%] sm:min-w-[45%]">
+                  <Input
+                    placeholder="Enter firstname"
+                    type="text"
+                    name="firstname"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="min-w-[100%] sm:min-w-[45%]">
+                  <Input
+                    placeholder="Enter lastname"
+                    type="text"
+                    name="lastname"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="min-w-[100%] sm:min-w-[45%]">
+                  <Input
+                    placeholder="Enter email"
+                    type="email"
+                    name="email"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="min-w-[100%] sm:min-w-[45%]">
+                  <Input
+                    placeholder="Enter password"
+                    type="password"
+                    name="password"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="min-w-[100%] sm:min-w-[45%]">
+                  <Input
+                    placeholder="Confirm password"
+                    type="password"
+                    name="confirmPassword"
+                    onChange={handleInputChange}
+                  />{" "}
+                </div>
                 <div className="form-control w-full col-span-2">
                   <label className="label">
                     <span className="label-text">Profile Picture</span>
