@@ -109,7 +109,7 @@ const Login = () => {
         </div>
       </div>
       <div className="footer w-full flex justify-center items-start md:items-center mb-2">
-        <small>
+        <small className="text-pretty m-2">
           Built by Alexander Muli / +254702051060 / alexandermuli234@gmail.com
           &copy; 2024
         </small>

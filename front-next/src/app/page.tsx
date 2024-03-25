@@ -526,7 +526,7 @@ export default function Home() {
         </div>
       </div>
       <div className="footer flex justify-center items-start md:items-center">
-        <small>
+        <small className="text-pretty m-2">
           Built by Alexander Muli / +254702051060 / alexandermuli234@gmail.com
           &copy; 2024
         </small>
