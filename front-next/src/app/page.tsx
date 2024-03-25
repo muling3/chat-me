@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Fragment } from "react";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
@@ -36,12 +37,17 @@ let userInfo: User;
 let client: Socket;
 
 export default function Home() {
+  var w = window.innerWidth;
+  var h = window.innerHeight;
+
   const API_URL = process.env.API_URL || "http://localhost:4000";
   const [usersList, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User>();
   const [messagesList, setMessages] = useState<Message[]>([]);
   const router = useRouter();
 
+  const [resize, setResize] = useState<boolean>(true);
+  const [width, setWidth] = useState<string>(w > 1000 ? "w-[9%]" : "w-[0%]");
   const [title, setTitle] = useState("friends");
   const [selected, setSelected] = useState<{
     msgs?: {
@@ -249,6 +255,22 @@ export default function Home() {
       .catch((err) => console.log("error logging out", err));
   };
 
+  const toggleMenu = (e: React.MouseEvent) => {
+    // prevent default
+    e.preventDefault();
+
+    setResize((prev) => {
+      if (prev) {
+        if (w > 1000) setWidth("w-[40%] sm:w-[40%]");
+        else setWidth("w-[100%] sm:w-[100%] absolute left-0 bg-blue-200 z-40");
+      } else {
+        if (w > 1000) setWidth("w-[8%] sm:w-[8%]");
+        else setWidth("w-[0%] sm:w-[0%]");
+      }
+      return !prev;
+    });
+  };
+
   if (!userInfo) {
     return (
       <main className="w-screen h-screen px-24 py-10 flex justify-center items-center overflow-hidden">
@@ -260,13 +282,21 @@ export default function Home() {
   }
 
   return (
-    <main className="w-screen h-screen px-24 py-10 relative overflow-hidden">
-      <div className="logo text-start sticky top-0 z-50 mb-3">
+    <main className="w-screen h-screen px-2 sm:px-24 py-10 relative overflow-hidden">
+      <div className="logo text-start sticky top-0 z-40 mb-3">
         <span className="font-extrabold text-blue-400 text-3xl">Chat</span>
         <span className="text-gray-500 font-bold text-xl">Me</span>
       </div>
-      <div className="grid grid-cols-3 gap-4 h-[95%] overflow-hidden">
-        <div className="col-span-1 rounded-md border-2 py-5 shadow-innerneu1 flex justify-between items-start h-[98%] overflow-hidden">
+      <button
+        className="absolute top-10 right-2 sm:right-24 cursor-pointer text-3xl z-50"
+        onClick={toggleMenu}
+      >
+        <span className="text-blue-400 w-full"> &#9776;</span>
+      </button>
+      <div className="flex justify-between items-start gap-0 sm:gap-4 h-[95%] overflow-hidden w-full relative">
+        <div
+          className={`${width} rounded-md sm:border-2 py-5 shadow-innerneu1 flex justify-between items-start h-[98%] overflow-hidden transition-all duration-200 ease-linear`}
+        >
           <div className="menu-b w-[22%] h-full flex flex-col justify-between items-start">
             <div className="menu h-[40%] w-full flex flex-col justify-around items-start px-2">
               <button
@@ -310,47 +340,49 @@ export default function Home() {
               </button>
             </div>
           </div>
-          <div className="menu-action min-h-full w-[88%] h-full overflow-y-auto overflow-x-hidden">
-            <h1 className="header uppercase font-semibold">{title}</h1>
-            {title === "friends" && usersList.length == 0 && (
-              <div className="no-msgs h-full w-full flex flex-col items-center justify-center">
-                <span className="text-gray-500">
-                  Can't locate friends nearby
-                </span>
-                <button className="btn px-4 py-2 rounded-xl shadow-innerneu1 text-gray-600">
-                  Make Friends
-                </button>
-              </div>
-            )}
-            {title === "friends" &&
-              usersList.length >= 1 &&
-              usersList.map((u, i) => (
-                <div
-                  className="user-item border-b-2 flex justify-start items-center w-full p-2 cursor-pointer duration-500 hover:bg-blue-200 hover:text-white"
-                  key={`${i}`}
-                  onClick={(e) => handleUserSelection(e, u)}
-                >
-                  <div className="avatar mr-2">
-                    <div className="w-12 mask mask-squircle">
-                      <Image
-                        src="profile_1.svg"
-                        alt="this profile photo"
-                        width={`100`}
-                        height={100}
-                      />
+          {!resize && (
+            <div className="menu-action min-h-full w-[88%] h-full overflow-y-auto overflow-x-hidden">
+              <h1 className="header uppercase font-semibold">{title}</h1>
+              {title === "friends" && usersList.length == 0 && (
+                <div className="no-msgs h-full w-full flex flex-col items-center justify-center">
+                  <span className="text-gray-500">
+                    Can't locate friends nearby
+                  </span>
+                  <button className="btn px-4 py-2 rounded-xl shadow-innerneu1 text-gray-600">
+                    Make Friends
+                  </button>
+                </div>
+              )}
+              {title === "friends" &&
+                usersList.length >= 1 &&
+                usersList.map((u, i) => (
+                  <div
+                    className="user-item border-b-2 flex justify-start items-center w-full p-2 cursor-pointer duration-500 hover:bg-blue-200 hover:text-white"
+                    key={`${i}`}
+                    onClick={(e) => handleUserSelection(e, u)}
+                  >
+                    <div className="avatar mr-2">
+                      <div className="w-12 mask mask-squircle">
+                        <Image
+                          src="profile_1.svg"
+                          alt="this profile photo"
+                          width={`100`}
+                          height={100}
+                        />
+                      </div>
+                    </div>
+                    <div className="user-info">
+                      <p className="username font-medium text-gray-800">
+                        {u.username}
+                      </p>
+                      <small className="fullname text-gray-500">{`${u.firstname} ${u.lastname}`}</small>
                     </div>
                   </div>
-                  <div className="user-info">
-                    <p className="username font-medium text-gray-800">
-                      {u.username}
-                    </p>
-                    <small className="fullname text-gray-500">{`${u.firstname} ${u.lastname}`}</small>
-                  </div>
-                </div>
-              ))}
-          </div>
+                ))}
+            </div>
+          )}
         </div>
-        <div className="col-span-2 rounded-md border-2 shadow-innerneu1 h-[98%] w-full overflow-hidden flex flex-col justify-between items-start">
+        <div className="rounded-md sm:border-2 shadow-innerneu1 h-[98%] w-full overflow-hidden flex flex-col justify-between items-start">
           <div className="selected-user w-full flex justify-between items-center p-4 border-b-2">
             <div className="user flex ">
               <div className="avatar mr-3">
@@ -478,16 +510,16 @@ export default function Home() {
                 ))}
             </ScrollToBottom>
           </div>
-          <div className="send w-full flex justify-between items-center p-4">
+          <div className="send w-full flex justify-between items-center p-2 sm:p-4">
             <Input
               name="message"
               placeholder="Type your message here ...."
-              styles="w-full mr-3 border-2"
+              styles="w-full mr-1 sm:mr-3 border-2"
               type="text"
             />
             <Button
               label="Send"
-              styles="w-24 hover:bg-blue-500 hover:text-white"
+              styles="px-2 sm:w-24 hover:bg-blue-500 hover:text-white"
               onClick={handleSendMessage}
             />
           </div>
