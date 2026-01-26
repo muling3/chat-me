@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
-import { Urbanist } from "next/font/google";
+import { Urbanist, Poppins } from "next/font/google";
 import "./globals.css";
 
 const urbanist = Urbanist({
   variable: "--font-urbanist",
+  subsets: ["latin"],
+});
+
+const poppins = Poppins({
+  variable: "--font-poppins",
+  weight: ["400", "700"],
   subsets: ["latin"],
 });
 
@@ -19,7 +25,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${urbanist.variable} antialiased`}>{children}</body>
+      <body className={`${urbanist.variable} ${poppins.variable} antialiased`}>
+        {children}
+      </body>
     </html>
   );
 }
