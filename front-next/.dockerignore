@@ -1,8 +1,0 @@
-.next
-package-lock.json
-README.md
-node_modules
-.gitignore
-next-env.d.ts
-dockerfile-next
-out

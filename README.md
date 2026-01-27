@@ -1,1 +1,4 @@
-🎉 First stable release of the project.
+Version 2
+
+Frontend - Next Js, Shadcn UI, Tailwind
+Backend - Express JS, Mongo DB
