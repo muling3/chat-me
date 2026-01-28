@@ -8,6 +8,9 @@ export interface User {
   role?: string;
   bio?: string;
   isAdmin?: boolean;
+  isFriend?: boolean;
+  mutualFriends?: number;
+  mutualGroups?: number;
 }
 
 export interface Message {

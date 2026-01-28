@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Conversation } from "@/lib/types";
+import { mockConversations } from "@/lib/data";
 import Sidebar from "./sidebar";
 import MainPanel from "./main-panel";
 import DetailsPanel from "./details-panel";
@@ -12,13 +13,15 @@ interface ChatLayoutProps {
   initialSelectedConversation?: Conversation;
   onSelectConversation?: (conversation: Conversation) => void;
   onSendMessage?: (conversationId: string, content: string) => void;
+  onStartCall?: (userId: string, type: "audio" | "video") => void;
 }
 
 export default function ChatLayout({
-  conversations = [],
-  initialSelectedConversation,
+  conversations = mockConversations,
+  initialSelectedConversation = mockConversations[0],
   onSelectConversation,
   onSendMessage,
+  onStartCall,
 }: ChatLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [detailsOpen, setDetailsOpen] = useState(true);
@@ -32,6 +35,13 @@ export default function ChatLayout({
   useEffect(() => {
     setConversationsList(conversations);
   }, [conversations]);
+
+  // Update selected conversation when initialSelectedConversation changes
+  useEffect(() => {
+    if (initialSelectedConversation) {
+      setSelectedConversation(initialSelectedConversation);
+    }
+  }, [initialSelectedConversation]);
 
   const handleSelectConversation = (conversation: Conversation) => {
     setSelectedConversation(conversation);
@@ -92,6 +102,58 @@ export default function ChatLayout({
     onSendMessage?.(selectedConversation.id, content);
   };
 
+  const handleStartNewConversation = async (conversation: Conversation) => {
+    try {
+      // Add to conversations list
+      setConversationsList((prev) => [conversation, ...prev]);
+
+      // Select the new conversation
+      setSelectedConversation(conversation);
+
+      console.log("Started new conversation:", conversation.name);
+    } catch (error) {
+      console.error("Failed to start new conversation:", error);
+    }
+  };
+
+  const handleAudioCall = (conversationId: string) => {
+    const conversation = conversationsList.find((c) => c.id === conversationId);
+    if (conversation && conversation.type === "direct") {
+      const userId = conversation.participants[0].id;
+      console.log(`Starting audio call with user: ${userId}`);
+      onStartCall?.(userId, "audio");
+      // You could open a call modal or interface here
+    }
+  };
+
+  const handleVideoCall = (conversationId: string) => {
+    const conversation = conversationsList.find((c) => c.id === conversationId);
+    if (conversation && conversation.type === "direct") {
+      const userId = conversation.participants[0].id;
+      console.log(`Starting video call with user: ${userId}`);
+      onStartCall?.(userId, "video");
+      // You could open a call modal or interface here
+    }
+  };
+
+  const handleMuteToggle = (conversationId: string) => {
+    // Toggle mute status
+    setConversationsList((prev) =>
+      prev.map((conv) =>
+        conv.id === conversationId ? { ...conv, isMuted: !conv.isMuted } : conv,
+      ),
+    );
+
+    // Update selected conversation if it's the one being toggled
+    if (selectedConversation?.id === conversationId) {
+      setSelectedConversation((prev) =>
+        prev ? { ...prev, isMuted: !prev.isMuted } : prev,
+      );
+    }
+
+    console.log(`Toggled mute for conversation: ${conversationId}`);
+  };
+
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       {/* Sidebar - Conversations List */}
@@ -108,6 +170,8 @@ export default function ChatLayout({
           isCollapsed={!sidebarOpen}
           onToggle={() => setSidebarOpen(!sidebarOpen)}
           onSelectConversation={handleSelectConversation}
+          onStartNewConversation={handleStartNewConversation}
+          onStartCall={onStartCall}
         />
       </div>
 
@@ -116,6 +180,9 @@ export default function ChatLayout({
         <MainPanel
           conversation={selectedConversation}
           onSendMessage={handleSendMessage}
+          onAudioCall={handleAudioCall}
+          onVideoCall={handleVideoCall}
+          onMuteToggle={handleMuteToggle}
           isMobile={false}
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
           onToggleDetails={() => setDetailsOpen(!detailsOpen)}

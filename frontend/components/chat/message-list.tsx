@@ -21,11 +21,13 @@ import { Message } from "@/lib/types";
 interface MessageListProps {
   messages: Message[];
   currentUserId: string;
+  isTyping?: boolean;
 }
 
 export default function MessageList({
   messages,
   currentUserId,
+  isTyping,
 }: MessageListProps) {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -62,10 +64,10 @@ export default function MessageList({
     }
   };
 
-  // Scroll to bottom on new messages
+  // Scroll to bottom on new messages or when typing
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isTyping]);
 
   const isUserMessage = (senderId: string) => {
     return senderId === currentUserId;
@@ -79,7 +81,7 @@ export default function MessageList({
             <div key={date}>
               {/* Date Separator */}
               <div className="flex items-center justify-center my-6">
-                <div className="px-4 py-1 bg-muted rounded-full text-sm text-muted-foreground">
+                <div className="px-4 py-1 bg-linear-to-r from-muted/50 to-muted/30 rounded-full text-sm text-muted-foreground backdrop-blur-sm">
                   {formatDateHeader(new Date(date))}
                 </div>
               </div>
@@ -105,7 +107,7 @@ export default function MessageList({
                     >
                       {/* Avatar */}
                       {!userMessage && showAvatar && (
-                        <Avatar className="h-8 w-8">
+                        <Avatar className="h-8 w-8 ring-2 ring-background">
                           <AvatarImage src={message.sender.avatar} />
                           <AvatarFallback>
                             {message.sender.name.charAt(0)}
@@ -134,10 +136,10 @@ export default function MessageList({
                         <div className="flex gap-2">
                           <div
                             className={cn(
-                              "rounded-2xl px-4 py-2 relative group/message transition-colors",
+                              "rounded-2xl px-4 py-2 relative group/message transition-all",
                               userMessage
-                                ? "bg-primary text-primary-foreground rounded-tr-none shadow-sm hover:bg-primary/90"
-                                : "bg-muted rounded-tl-none hover:bg-muted/80",
+                                ? "bg-linear-to-r from-primary to-primary/80 text-primary-foreground rounded-tr-none shadow-sm"
+                                : "bg-linear-to-r from-muted to-muted/80 rounded-tl-none",
                               message.type === "system" &&
                                 "bg-transparent text-muted-foreground italic",
                             )}
@@ -239,24 +241,20 @@ export default function MessageList({
         )}
 
         {/* Typing Indicator */}
-        {messages.length > 0 &&
-          messages[messages.length - 1].sender.id !== currentUserId && (
-            <div className="flex items-center gap-3">
-              <Avatar className="h-8 w-8">
-                <AvatarImage
-                  src={messages[messages.length - 1].sender.avatar}
-                />
-                <AvatarFallback>
-                  {messages[messages.length - 1].sender.name.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex gap-1">
-                <div className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce" />
-                <div className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce delay-75" />
-                <div className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce delay-150" />
-              </div>
+        {isTyping && (
+          <div className="flex items-center gap-3">
+            <Avatar className="h-8 w-8 ring-2 ring-background">
+              <AvatarFallback>
+                {messages[messages.length - 1]?.sender?.name?.charAt(0) || "U"}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex gap-1 bg-linear-to-r from-muted to-muted/80 rounded-2xl rounded-tl-none px-4 py-2">
+              <div className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce" />
+              <div className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce delay-75" />
+              <div className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce delay-150" />
             </div>
-          )}
+          </div>
+        )}
 
         {/* Bottom reference for scrolling */}
         <div ref={bottomRef} />
