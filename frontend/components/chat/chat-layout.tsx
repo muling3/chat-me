@@ -160,7 +160,7 @@ export default function ChatLayout({
       <div
         className={cn(
           "flex flex-col h-full border-r transition-all duration-300",
-          sidebarOpen ? "w-80" : "w-0 md:w-16",
+          sidebarOpen ? "w-96" : "w-0 md:w-16",
           !sidebarOpen && "overflow-hidden",
         )}
       >
