@@ -109,6 +109,16 @@ export default function Sidebar({
     setIsNewChatOpen(false);
   };
 
+  // Handle icon click in collapsed state
+  const handleIconClick = (tabType: TabType) => {
+    // Set sidebar to open (false means not collapsed)
+    if (isCollapsed) {
+      onToggle(); // This will set isCollapsed to false
+    }
+    // Set the active tab
+    setActiveTab(tabType);
+  };
+
   return (
     <>
       <div className="flex flex-col h-full">
@@ -198,13 +208,30 @@ export default function Sidebar({
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
-            <Button size="icon" variant="ghost">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => handleIconClick("all")}
+            >
               <MessageSquare className="h-5 w-5" />
             </Button>
-            <Button size="icon" variant="ghost">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => handleIconClick("groups")}
+            >
               <Users className="h-5 w-5" />
             </Button>
-            <Button size="icon" variant="ghost">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => {
+                if (isCollapsed) {
+                  onToggle(); // Open sidebar
+                }
+                // The search functionality will be available when sidebar opens
+              }}
+            >
               <Search className="h-5 w-5" />
             </Button>
             <Button
