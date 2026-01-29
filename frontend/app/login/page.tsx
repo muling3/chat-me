@@ -1,6 +1,7 @@
 import LoginForm from "@/components/login-form";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { ThemeModeToggle } from "@/components/theme-toggle";
 
 export default function LoginPage() {
   return (
@@ -79,6 +80,11 @@ export default function LoginPage() {
               <ArrowLeft className="h-5 w-5 mr-2" />
               Back
             </button>
+          </div>
+
+          {/* theme toggle */}
+          <div className="mb-8 flex justify-end">
+            <ThemeModeToggle />
           </div>
 
           {/* Login Form Container */}

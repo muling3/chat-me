@@ -1,6 +1,7 @@
 import SignupForm from "@/components/signup-form";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { ThemeModeToggle } from "@/components/theme-toggle";
 
 export default function SignupPage() {
   return (
@@ -93,6 +94,11 @@ export default function SignupPage() {
               <ArrowLeft className="h-5 w-5 mr-2" />
               Back
             </Link>
+          </div>
+
+          {/* theme toggle */}
+          <div className="mb-8 flex justify-end">
+            <ThemeModeToggle />
           </div>
 
           {/* Signup Form Container */}

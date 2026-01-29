@@ -14,6 +14,7 @@ import { Conversation } from "@/lib/types";
 import ChatHeader from "./chat-header";
 import MessageInput from "./message-input";
 import MessageList from "./message-list";
+import { ThemeModeToggle } from "../theme-toggle";
 
 interface MainPanelProps {
   conversation?: Conversation;
@@ -137,9 +138,14 @@ export default function MainPanel({
               <Users className="h-5 w-5" />
             </Button>
           )}
+
           <Button size="icon" variant="ghost">
             <MoreVertical className="h-5 w-5" />
           </Button>
+
+          {/* theme toggle */}
+          <ThemeModeToggle />
+
           <Button size="icon" variant="ghost" onClick={onToggleDetails}>
             <PanelRight className="h-5 w-5" />
           </Button>
