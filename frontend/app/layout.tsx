@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${urbanist.variable} ${poppins.variable} antialiased`}>
+      <body className={`${poppins.variable} ${urbanist.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
