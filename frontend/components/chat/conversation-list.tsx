@@ -277,6 +277,7 @@ function ConversationItem({
             {/* Unread messages badge */}
             {conversation.unreadCount > 0 && (
               <Badge
+                suppressHydrationWarning
                 className={cn(
                   "h-5 min-w-5 px-1 text-xs font-bold transition-all",
                   conversation.unreadCount > 9 && "min-w-6 px-1.5",

@@ -72,6 +72,7 @@ export default function Tabs({
             <span className="text-xs font-medium">{tab.label}</span>
             {tab.badge !== null && tab.badge > 0 && (
               <Badge
+                suppressHydrationWarning
                 className="absolute -top-1 -right-1 h-5 min-w-5 px-1 text-xs font-bold"
                 variant="default"
                 style={{ backgroundColor: badgeColor }}
